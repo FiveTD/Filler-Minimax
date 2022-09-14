@@ -1,8 +1,9 @@
 ﻿using System.Data.Common;
+using Minimax;
 
 namespace FillerBoard
 {
-    public class FillerBoard
+    public class FillerBoard : IMinimax
     {
         const int DEF_SIZE = 8;
         const byte DEF_COLORS = 6;
@@ -16,6 +17,7 @@ namespace FillerBoard
         private byte lastColor;
         
         public byte Turn { get; private set; }
+        public int Score { get => throw new NotImplementedException(); }
 
         public FillerBoard(int size) :
             this(size, size, DEF_COLORS, DEF_PLAYERS) { }
@@ -42,6 +44,11 @@ namespace FillerBoard
             return true;
         }
 
+        public void Move(int[] color)
+        {
+            Move((byte)color[0]);
+        }
+
         public void Move(byte color)
         {
             return;
@@ -56,6 +63,12 @@ namespace FillerBoard
         {
             return 0;
         }
+
+        public List<int[]> ValidMoves()
+        {
+            return new List<int[]>();
+        }
+
 
         //public FillerBoard Clone()
         //{
