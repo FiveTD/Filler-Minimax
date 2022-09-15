@@ -3,7 +3,7 @@ using Minimax;
 
 namespace FillerBoard
 {
-    public class FillerBoard : IMinimax
+    public class FillerBoard : IMinimaxBoard
     {
         const int DEF_SIZE = 8;
         const byte DEF_COLORS = 6;
@@ -16,7 +16,7 @@ namespace FillerBoard
 
         private byte lastColor;
         
-        public byte Turn { get; private set; }
+        public byte Turn { get; set; }
         public int Score { get => throw new NotImplementedException(); }
 
         public FillerBoard(int size) :
@@ -27,6 +27,8 @@ namespace FillerBoard
             board = new byte[x, y];
             numColors = colors;
             numPlayers = players;
+
+            
         }
 
         public byte this[int x, int y]
@@ -51,12 +53,16 @@ namespace FillerBoard
 
         public void Move(byte color)
         {
-            return;
+            //TODO: Move
+
+            Turn++;
+            if (Turn == numPlayers) Turn = 0;
         }
 
         public void Unmove()
         {
-            return;
+            Turn--;
+            if (Turn == 255) Turn = numPlayers;
         }
 
         public int Size(byte player)
@@ -67,6 +73,12 @@ namespace FillerBoard
         public List<int[]> ValidMoves()
         {
             return new List<int[]>();
+        }
+
+        public bool Won(out byte winnner)
+        {
+            winnner = 0;
+            return true;
         }
 
 
