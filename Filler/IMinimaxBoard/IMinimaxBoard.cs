@@ -8,6 +8,9 @@ namespace Minimax;
 
 public interface IMinimaxBoard
 {
+    // turn
+    public abstract byte Turn { get; protected set; }
+
     // move
     public abstract void Move(int[] move);
 
@@ -15,12 +18,10 @@ public interface IMinimaxBoard
     public abstract void Unmove();
 
     // score position
-    public abstract int Score { get; }
-
-    public abstract byte Turn { get; protected set; }
+    public abstract int Score(byte turn = 255);
 
     // valid moves
     public abstract List<int[]> ValidMoves();
 
-    //public abstract bool Won(out byte winner);
+    public abstract bool Won(out byte? winner);
 }

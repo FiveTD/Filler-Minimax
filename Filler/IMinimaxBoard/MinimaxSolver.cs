@@ -1,15 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Minimax;
+﻿namespace Minimax;
 
 public class MinimaxSolver
 {
+    const int MaxScore = int.MaxValue;
+    const int MinScore = int.MinValue + 1;
+
     private readonly byte turn;
     private readonly int maxDepth;
+
+    public int NodesSearched { get; private set; }
 
     public MinimaxSolver(byte turn, int maxDepth)
     {
@@ -17,52 +16,55 @@ public class MinimaxSolver
         this.turn = turn;
     }
 
+    /// <summary>
+    /// Determines the best move on the board.
+    /// </summary>
+    /// <param name="board"></param>
+    /// <returns></returns>
     public int[] Move(IMinimaxBoard board)
     {
+        NodesSearched = 0;
         Analyze(board, maxDepth, out int[] bestMove);
         return bestMove;
     }
 
-    private int Analyze(IMinimaxBoard board, int depth, out int[] move, int alpha = int.MinValue, int beta = int.MaxValue)
+    // TODO: assumes two players
+    private int Analyze(IMinimaxBoard board, int depth, out int[] move, int alpha = MinScore, int beta = MaxScore)
     {
         move = Array.Empty<int>();
 
-        if (depth == 0) return board.Score;
-
-        bool turnMatches = board.Turn == turn;
-
-        int bestScore = int.MaxValue * (turnMatches ? -1 : 1); // low value if maximizing, high value if minimizing
-        int[] bestMove = move;
+        if (depth == 0) return board.Score();
+        //if (board.Won(out byte? winner))
+        //{
+        //    if (winner is null) return 0;
+        //    else if (winner == turn) return MaxScore - 1;
+        //    else return MinScore + 1;
+        //}
 
         foreach (int[] m in board.ValidMoves())
         {
+            NodesSearched++;
             board.Move(m);
-            int score = Analyze(board, depth - 1, out _, alpha, beta);
+            int score = -Analyze(board, depth - 1, out _, -beta, -alpha);
             board.Unmove();
 
-            if (turnMatches)
+            // Move is too good, opponent wouldn't allow it
+            // Prune this branch
+            if (score >= beta)
             {
-                if (score > bestScore)
-                {
-                    bestScore = score;
-                    bestMove = m;
-                    alpha = Math.Max(score, alpha);
-                }
-            }
-            else
-            {
-                if (score < bestScore)
-                {
-                    bestScore = score;
-                    bestMove = m;
-                    beta = Math.Min(score, beta);
-                }
+                move = m;
+                return beta;
             }
 
-            if (beta <= alpha) break;
+            // Move is the best we've seen so far
+            if (score > alpha)
+            {
+                alpha = score;
+                move = m;
+            }
         }
 
-        move = bestMove; 
-        return bestScore;
+        //if (move.Length == 0) move = board.ValidMoves()[0];
+        return alpha;
     }
 }
